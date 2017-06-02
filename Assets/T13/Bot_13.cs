@@ -6,13 +6,18 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class Bot_13 : MonoBehaviour
 {
-    //public float[] Input;
+    public bool canMove;
+    public bool canRotate;
+    public float RotateSpeed;
+    public float Speed;
+    [Space(5)]
     public float[] Output;
     [Space(5)]
     [ReadOnly]
     public int Inputs;
     public List<int> Hiddens;
     public int Outputs;
+
 
     public NN_13 NN;
     public GameObject SensorBank;
@@ -47,6 +52,26 @@ public class Bot_13 : MonoBehaviour
     void Update()
     {
         Compute();
+        Move();
+    }
+
+    private void Move()
+    {
+        var r = Output[0] + Output[1];
+        Vector3 d = Vector3.zero;
+
+        d += new Vector3(0, -Output[0], 0) * RotateSpeed * Time.deltaTime;
+        d += new Vector3(0, Output[1], 0) * RotateSpeed * Time.deltaTime;
+
+        if (canRotate)
+        {
+            transform.Rotate(d);
+        }
+
+        if (canMove)
+        {
+            transform.position += (transform.forward * Time.deltaTime * Speed) * r;
+        }
     }
 
     public void Compute()

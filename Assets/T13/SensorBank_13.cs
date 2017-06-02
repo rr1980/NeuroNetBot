@@ -18,7 +18,7 @@ public class SensorBank_13 : MonoBehaviour
         }
     }
 
-
+    [ReadOnly]
     public List<Sensor_13> Sensors;
 
     private void Start()

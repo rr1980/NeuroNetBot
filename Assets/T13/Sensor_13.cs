@@ -6,6 +6,7 @@ public class Sensor_13 : MonoBehaviour
     public float Distance;
 
     private SensorBank_13 SensorBank;
+    private Color col;
 
     private void Start()
     {
@@ -17,9 +18,10 @@ public class Sensor_13 : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(transform.position, transform.forward, out hit, SensorBank.ScanRange))
         {
-            if (hit.transform.root.gameObject.tag == SensorBank.ObstTag)
+            if (hit.transform.gameObject.tag == SensorBank.ObstTag)
             {
-                Distance = Vector3.Distance(hit.transform.position, transform.position);
+                Distance = (SensorBank.ScanRange - Vector3.Distance(hit.transform.position, transform.position)) *1000;
+                //Debug.Log(Distance);
             }
             else
             {
@@ -34,6 +36,15 @@ public class Sensor_13 : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Debug.DrawLine(transform.position, transform.forward * SensorBank.ScanRange, Color.green);
+        if (Distance != -1)
+        {
+            col = Color.red;
+        }
+        else
+        {
+            col = Color.green;
+        }
+
+        Debug.DrawLine(transform.position, transform.position + transform.forward * SensorBank.ScanRange, col);
     }
 }
