@@ -1,0 +1,29 @@
+from 330
+to 30
+
+
+/////
+
+dynamic target categorized nn
+
+/////
+
+test ohne grafik
+
+generation anzeigen
+
+food in out range
+
+dns speichern...highscore
+color markierungen überarbeiten matk zu int
+voher trainen um netz-architektur zu testen...
+croddfactor in binary?
+
+sensor und reaktion manuel testen...
+
+
+
+8,00 KB (8.192 Bytes)
+4,11 KB (4.214 Bytes)
+
+
