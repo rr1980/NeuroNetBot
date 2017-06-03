@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[ExecuteInEditMode]
+//[ExecuteInEditMode]
 public class Bot_13 : MonoBehaviour
 {
     public bool canMove;
@@ -12,19 +12,25 @@ public class Bot_13 : MonoBehaviour
     public float Speed;
     [Space(5)]
     public float[] Output;
+    
     [Space(5)]
     [ReadOnly]
     public int Inputs;
     public List<int> Hiddens;
     public int Outputs;
-
+    [Space(5)]
+    [ReadOnly]
+    public float Fitness;
+    public Vector3 StartPoint;
 
     public NN_13 NN;
     public GameObject SensorBank;
     private SensorBank_13 sb;
+    
 
     void Start()
     {
+        StartPoint = transform.position;
         var t = GetComponentsInChildren<SensorBank_13>();
         if (t.Length < 1)
         {
@@ -45,19 +51,33 @@ public class Bot_13 : MonoBehaviour
 
         Inputs = sb.Count;
 
-        NN = ScriptableObject.CreateInstance("NN_13") as NN_13;
-        NN.Init(this, Inputs, Hiddens, Outputs);
+        if (!Application.isPlaying) {
+            NN = ScriptableObject.CreateInstance("NN_13") as NN_13;
+            NN.Init(Inputs, Hiddens, Outputs);
+        }
+    }
+
+    public void Init(NN_13 nn)
+    {
+        NN = nn;
     }
 
     void Update()
     {
+        if (NN == null)
+        {
+            return;
+        }
+
         Compute();
         Move();
+
+        Fitness = Vector3.Distance(StartPoint, transform.position);
     }
 
     private void Move()
     {
-        var r = Output[0] + Output[1];
+        var r = Mathf.Clamp((Output[0] + Output[1]), 0, 1);
         Vector3 d = Vector3.zero;
 
         d += new Vector3(0, -Output[0], 0) * RotateSpeed * Time.deltaTime;
@@ -65,11 +85,13 @@ public class Bot_13 : MonoBehaviour
 
         if (canRotate)
         {
+            //Fitness -= 1f;
             transform.Rotate(d);
         }
 
         if (canMove)
         {
+            //Fitness -= 1f;
             transform.position += (transform.forward * Time.deltaTime * Speed) * r;
         }
     }
@@ -89,5 +111,25 @@ public class Bot_13 : MonoBehaviour
     private void OnDrawGizmos()
     {
         DebugExtension.DrawArrow(transform.position, transform.forward * 2, Color.red);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.transform.gameObject.tag == "Wall")
+        {
+            Debug.Log("BÄM");
+            gameObject.SetActive(false);
+            //var bot = collision.transform.root.gameObject.GetComponent<BotController_9>();
+            //if (bot != null)
+            //{
+            //    if (c != null)
+            //    {
+            //        bot.Health += c.FoodGod;
+            //        var x = UnityEngine.Random.Range(c.FoodSpawnRange.x, c.FoodSpawnRange.y);
+            //        var z = UnityEngine.Random.Range(c.FoodSpawnRange.x, c.FoodSpawnRange.y);
+            //        transform.position = new Vector3(x, 0.5f, z);
+            //    }
+            //}
+        }
     }
 }

@@ -28,7 +28,7 @@ public class Neuron_13 : ScriptableObject
 
     internal float CalculateValue()
     {
-        return Value = Sigmoid_13.Output((float)InputSynapses.Sum(a => a.Weight * a.Input.Value));
+        return Value = Sigmoid_13.HyperbolicTangtent((float)InputSynapses.Sum(a => a.Weight * a.Input.Value));
     }
 
     internal void Randomize()
@@ -43,6 +43,13 @@ public static class Sigmoid_13
     {
         //return Math.Tanh(x);
         return x < -45.0f ? 0.0f : x > 45.0f ? 1.0f : 1.0f / (1.0f + (float)Math.Exp(-x));
+    }
+
+    public static float HyperbolicTangtent(float x)
+    {
+        if (x < -45.0f) return -1.0f;
+        else if (x > 45.0f) return 1.0f;
+        else return (float)Math.Tanh(x);
     }
 
     public static float BiPolarSigmoid(float a, float p)

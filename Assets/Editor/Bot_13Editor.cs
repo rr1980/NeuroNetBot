@@ -8,9 +8,11 @@ public class Bot_13Editor : Editor
         Bot_13 bot = (Bot_13)target;
 
 
-        if (GUILayout.Button("Compute"))
+        if (GUILayout.Button("SetNN"))
         {
-            bot.Compute();
+            var n = ScriptableObject.CreateInstance("NN_13") as NN_13;
+            n.Init(bot.Inputs, bot.Hiddens, bot.Outputs);
+            bot.Init(n);
         }
 
         DrawDefaultInspector();

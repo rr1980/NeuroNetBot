@@ -2,7 +2,7 @@
 [CreateAssetMenu(menuName = "T13/Synapse_13")]
 public class Synapse_13 : ScriptableObject
 {
-    public double Weight;
+    public float Weight;
 
     public Neuron_13 Input;
     public Neuron_13 Output;

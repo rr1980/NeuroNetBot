@@ -14,7 +14,7 @@ public class NN_13 : ScriptableObject
         Layers = new List<Layer_13>();
     }
 
-    internal void Init(Bot_13 bot, int inputs, List<int> hiddens, int outputs)
+    public void Init(int inputs, List<int> hiddens, int outputs)
     {
         var li = ScriptableObject.CreateInstance("Layer_13") as Layer_13;
         li.Init(inputs);

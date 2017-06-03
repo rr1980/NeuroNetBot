@@ -16,16 +16,18 @@ public class Bot_9Editor : Editor
         var d = GameObject.FindGameObjectWithTag("Debugger");
         DebuggerController debugger = d.GetComponent<DebuggerController>();
 
-
-        if (GUILayout.Button("Debugger"))
+        if (debugger != null)
         {
-            debugger.Selected = bot.gameObject;
-            debugger._new = true;
-        }
+            if (GUILayout.Button("Debugger"))
+            {
+                debugger.Selected = bot.gameObject;
+                debugger._new = true;
+            }
 
-        if (GUILayout.Button("Cam Follow"))
-        {
-            cam.target = bot.transform;
+            if (GUILayout.Button("Cam Follow"))
+            {
+                cam.target = bot.transform;
+            }
         }
 
         DrawDefaultInspector();

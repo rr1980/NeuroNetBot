@@ -7,20 +7,24 @@ public class Sensor_13 : MonoBehaviour
 
     private SensorBank_13 SensorBank;
     private Color col;
+    private LayerMask layerMask;
 
     private void Start()
     {
         SensorBank = transform.parent.gameObject.GetComponent<SensorBank_13>();
+        layerMask = LayerMask.GetMask("Wall");
     }
 
     private void Update()
     {
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.forward, out hit, SensorBank.ScanRange))
+        if (Physics.Raycast(transform.position, transform.forward, out hit,1000,layerMask))
+        //if (Physics.Raycast(transform.position, transform.forward, out hit, SensorBank.ScanRange))
         {
             if (hit.transform.gameObject.tag == SensorBank.ObstTag)
             {
-                Distance = (SensorBank.ScanRange - Vector3.Distance(hit.transform.position, transform.position)) *1000;
+                //Distance = (SensorBank.ScanRange - Vector3.Distance(hit.transform.position, transform.position)) * (SensorBank.ScanRange - Vector3.Distance(hit.transform.position, transform.position))/10;
+                Distance = (Vector3.Distance(hit.transform.position, transform.position)/10)* (Vector3.Distance(hit.transform.position, transform.position) / 10);
                 //Debug.Log(Distance);
             }
             else
