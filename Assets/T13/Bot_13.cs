@@ -12,7 +12,7 @@ public class Bot_13 : MonoBehaviour
     public float Speed;
     [Space(5)]
     public float[] Output;
-    
+
     [Space(5)]
     [ReadOnly]
     public int Inputs;
@@ -21,16 +21,18 @@ public class Bot_13 : MonoBehaviour
     [Space(5)]
     [ReadOnly]
     public float Fitness;
-    public Vector3 StartPoint;
+    public GameObject Goal;
 
     public NN_13 NN;
     public GameObject SensorBank;
     private SensorBank_13 sb;
-    
+    private Vector3 StartPoint;
 
     void Start()
     {
-        StartPoint = transform.position;
+        Goal = GameObject.FindGameObjectWithTag("Finish");
+        StartPoint = transform.root.position;
+
         var t = GetComponentsInChildren<SensorBank_13>();
         if (t.Length < 1)
         {
@@ -51,7 +53,8 @@ public class Bot_13 : MonoBehaviour
 
         Inputs = sb.Count;
 
-        if (!Application.isPlaying) {
+        if (!Application.isPlaying)
+        {
             NN = ScriptableObject.CreateInstance("NN_13") as NN_13;
             NN.Init(Inputs, Hiddens, Outputs);
         }
@@ -72,16 +75,18 @@ public class Bot_13 : MonoBehaviour
         Compute();
         Move();
 
+        //Fitness = (Goal.transform.position - StartPoint) - (Goal.transform.position - transform.position);
+        //Fitness = Vector3.Distance(Goal.transform.position, StartPoint) - Vector3.Distance(Goal.transform.position, transform.root.position);
         Fitness = Vector3.Distance(StartPoint, transform.position);
     }
 
     private void Move()
     {
-        var r = Mathf.Clamp((Output[0] + Output[1]), 0, 1);
+        //var r = Mathf.Clamp((Output[0] + Output[1]), 0.1f, 0.9f);
         Vector3 d = Vector3.zero;
 
-        d += new Vector3(0, -Output[0], 0) * RotateSpeed * Time.deltaTime;
-        d += new Vector3(0, Output[1], 0) * RotateSpeed * Time.deltaTime;
+        //d += new Vector3(0, -Output[0], 0) * RotateSpeed * Time.deltaTime;
+        d += new Vector3(0, Output[0], 0) * RotateSpeed * Time.deltaTime;
 
         if (canRotate)
         {
@@ -92,7 +97,8 @@ public class Bot_13 : MonoBehaviour
         if (canMove)
         {
             //Fitness -= 1f;
-            transform.position += (transform.forward * Time.deltaTime * Speed) * r;
+            //transform.position += (transform.forward * Time.deltaTime * Speed) * r;
+            transform.position += (transform.forward * Time.deltaTime * Speed) * (Output[1] + 1);
         }
     }
 
@@ -117,8 +123,13 @@ public class Bot_13 : MonoBehaviour
     {
         if (collision.transform.gameObject.tag == "Wall")
         {
-            Debug.Log("BÄM");
-            gameObject.SetActive(false);
+            //Debug.Log("BÄM");
+            //gameObject.SetActive(false);
+
+            canMove = false;
+            canRotate = false;
+
+
             //var bot = collision.transform.root.gameObject.GetComponent<BotController_9>();
             //if (bot != null)
             //{

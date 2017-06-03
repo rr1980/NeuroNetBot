@@ -4,11 +4,15 @@ using System.Linq;
 using UnityEngine;
 public class Controller_13 : MonoBehaviour
 {
+    public bool Run = true;
     public float RoundTime = 20;
     [ReadOnly]
     public float Generation = 0;
+    [ReadOnly]
+    public float Best = 0;
     [Space(5)]
     public float mutateChance = 0.15f;
+
     public float perbetuation = 0.2f;
     public int crossFactor = 3;
     public bool SaveCrossDna = false;
@@ -17,16 +21,16 @@ public class Controller_13 : MonoBehaviour
     public int MaxBotCount = 20;
     public int FoodCount = 100;
     [Space(5)]
-    public Vector2 BotSpawnRangeX = new Vector2(-50, 50);
-    public Vector2 BotSpawnRangeY = new Vector2(-50, 50);
-    public Vector2 FoodSpawnRange = new Vector2(-80, 80);
+    public Vector3 BotSpawnRange = new Vector3(70, 1);
+    //public Vector2 BotSpawnRangeY = new Vector2(-50, 50);
+    public Vector3 FoodSpawnRange = new Vector3(-80, 80);
     [Space(5)]
     public GameObject Food;
     public GameObject Bot;
 
     private GameObject floor;
     private int old_foodCount;
-    private Vector2 old_foodRange;
+    private Vector3 old_foodRange;
     private float startTime = 0;
 
     private List<GameObject> bots;
@@ -46,67 +50,98 @@ public class Controller_13 : MonoBehaviour
 
     private void Update()
     {
-        if (startTime == 0)
+        if (Run)
         {
-            startTime = Time.realtimeSinceStartup;
-        }
-
-        if (!bots.Any(b => b.activeSelf) || RoundTime < (Time.realtimeSinceStartup - startTime))
-        {
-            updateFood();
-
-            //var bots = GameObject.FindGameObjectsWithTag("Bot").ToList();
-            bots.ForEach(s => s.SetActive(false));
-            var bestGOs = getBestBots(bots);
-            var bestNNs = bestGOs.Select(b => b.gameObject.GetComponentInChildren<Bot_13>()).ToList();
-
-            List<NN_13> childs = new List<NN_13>();
-
-            childs.Add(bestNNs[0].NN);
-
-            var rawnn0 = DNAAnalyzer_13.ReadNN(bestNNs[0].NN);
-            var rawnn1 = DNAAnalyzer_13.ReadNN(bestNNs[1].NN);
-            List<int> hs = getHiddenCount(bestNNs[0]);
-
-            for (int i = 0; i < Mathf.CeilToInt(MaxBotCount / 2); i++)
+            if (startTime == 0)
             {
-                var newnn = DNAAnalyzer_13.Sex(rawnn0, rawnn1, crossFactor, mutateChance, perbetuation);
-                NN_13 n1 = DNAAnalyzer_13.BuildNN(newnn[0], bestNNs[0].NN.Layers[0].Neurons.Count, hs, bestNNs[0].NN.Layers.Last().Neurons.Count);
-                NN_13 n2 = DNAAnalyzer_13.BuildNN(newnn[1], bestNNs[0].NN.Layers[0].Neurons.Count, hs, bestNNs[0].NN.Layers.Last().Neurons.Count);
+                startTime = Time.realtimeSinceStartup;
+            }
 
-                if (SaveCrossDna)
+            if (!bots.Any(b => b.GetComponent<Bot_13>().canMove) || RoundTime < (Time.realtimeSinceStartup - startTime))
+            {
+                updateFood();
+
+                //var bots = GameObject.FindGameObjectsWithTag("Bot").ToList();
+                bots.ForEach(s => s.SetActive(false));
+                var bestGOs = getBestBots(bots);
+                var bestNNs = bestGOs.Select(b => b.gameObject.GetComponentInChildren<Bot_13>()).ToList();
+
+                if (bestNNs[0].Fitness > Best)
                 {
-                    DNAAnalyzer_13.WriteDnasToCsv(rawnn0, rawnn1, newnn[0], newnn[1]);
-                    SaveCrossDna = false;
+                    Best = bestNNs[0].Fitness;
                 }
 
-                childs.Add(n1);
-                childs.Add(n2);
+                List<NN_13> childs = new List<NN_13>();
+
+                childs.Add(bestNNs[0].NN);
+
+                var rawnn0 = DNAAnalyzer_13.ReadNN(bestNNs[0].NN);
+                var rawnn1 = DNAAnalyzer_13.ReadNN(bestNNs[1].NN);
+                List<int> hs = getHiddenCount(bestNNs[0]);
+
+                // ---------------
+                //var _rawnn0 = DNAAnalyzer_13.ReadNN(bestNNs[0].NN);
+                //var _rawnn1 = DNAAnalyzer_13.ReadNN(bestNNs[1].NN);
+                //NN_13 _n1 = DNAAnalyzer_13.BuildNN(_rawnn0, bestNNs[0].NN.Layers[0].Neurons.Count, hs, bestNNs[0].NN.Layers.Last().Neurons.Count);
+                //NN_13 _n2 = DNAAnalyzer_13.BuildNN(_rawnn1, bestNNs[0].NN.Layers[0].Neurons.Count, hs, bestNNs[0].NN.Layers.Last().Neurons.Count);
+                //var __rawnn0 = DNAAnalyzer_13.ReadNN(_n1);
+                //var __rawnn1 = DNAAnalyzer_13.ReadNN(_n2);
+
+                //if (SaveCrossDna)
+                //{
+                //    DNAAnalyzer_13.WriteDnasToCsv(_rawnn0, __rawnn0, __rawnn1, __rawnn1);
+                //    SaveCrossDna = false;
+                //}
+                // ----------------
+
+                for (int i = 0; i < Mathf.CeilToInt(MaxBotCount / 2); i++)
+                {
+                    var newnn = DNAAnalyzer_13.Sex(rawnn0, rawnn1, crossFactor, mutateChance, perbetuation);
+                    NN_13 n1 = DNAAnalyzer_13.BuildNN(newnn[0], bestNNs[0].NN.Layers[0].Neurons.Count, hs, bestNNs[0].NN.Layers.Last().Neurons.Count);
+                    NN_13 n2 = DNAAnalyzer_13.BuildNN(newnn[1], bestNNs[0].NN.Layers[0].Neurons.Count, hs, bestNNs[0].NN.Layers.Last().Neurons.Count);
+
+                    if (SaveCrossDna)
+                    {
+                        DNAAnalyzer_13.WriteDnasToCsv(rawnn0, rawnn1, newnn[0], newnn[1]);
+                        SaveCrossDna = false;
+                    }
+
+                    childs.Add(n1);
+                    childs.Add(n2);
+                }
+
+
+                foreach (var item in childs)
+                {
+                    buildGameObject(item);
+                }
+
+                destroyItems(bots);
+                Generation++;
+                bots = GameObject.FindGameObjectsWithTag("Bot").ToList();
+                startTime = Time.realtimeSinceStartup;
             }
 
-
-            foreach (var item in childs)
-            {
-                buildGameObject(item);
-            }
-
-            destroyItems(bots);
-            Generation++;
-            bots = GameObject.FindGameObjectsWithTag("Bot").ToList();
-            startTime = Time.realtimeSinceStartup;
+            TimeRemaining = (float)Math.Round(Time.realtimeSinceStartup - startTime, 2);
         }
-        
-        TimeRemaining = (float)Math.Round(Time.realtimeSinceStartup - startTime, 2);
     }
 
+
+    public void ResetBest()
+    {
+        Best = 0;
+    }
 
     #region privates
     private void buildGameObject(NN_13 n = null)
     {
-        var x = UnityEngine.Random.Range(BotSpawnRangeX.x, BotSpawnRangeX.y);
-        var z = UnityEngine.Random.Range(BotSpawnRangeY.x, BotSpawnRangeY.y);
-        var t = Quaternion.Euler(0, UnityEngine.Random.Range(0, 360), 0);
-        GameObject bot = Instantiate(Bot, new Vector3(x, 1, z), t);
+        //var x = UnityEngine.Random.Range(BotSpawnRangeX.x, BotSpawnRangeX.y);
+        //var z = UnityEngine.Random.Range(BotSpawnRangeY.x, BotSpawnRangeY.y);
+        //var t = Quaternion.Euler(0, UnityEngine.Random.Range(0, 360), 0);
+        //GameObject bot = Instantiate(Bot, new Vector3(x, 1, z), t);
+
+        var t = Quaternion.Euler(0, 90, 0);
+        GameObject bot = Instantiate(Bot, BotSpawnRange, t);
         bot.SetActive(false);
         Bot_13 bc = bot.GetComponentInChildren<Bot_13>();
         if (n == null)

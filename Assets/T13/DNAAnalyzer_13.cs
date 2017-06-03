@@ -30,9 +30,9 @@ public static class DNAAnalyzer_13
 
         for (int l = 0; l < NN.Layers.Count; l++)
         {
-            for (int n = 0; n < NN.Layers[l].Neurons.Count-1; n++)
+            for (int n = 0; n < NN.Layers[l].Neurons.Count; n++)
             {
-                for (int s = 0; s < NN.Layers[l].Neurons[n].OutputSynapses.Count-1; s++)
+                for (int s = 0; s < NN.Layers[l].Neurons[n].OutputSynapses.Count; s++)
                 {
                     NN.Layers[l].Neurons[n].OutputSynapses[s].Weight = nn[index];
                     index++;
