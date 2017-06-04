@@ -231,12 +231,13 @@ public static class NNAnalyzer
 
     private static void writeDnasToCsv(List<double> p1, List<double> p2, List<double> c1, List<double> c2, int inpuNeuron, int hiddenNeuron1, int hiddenNeuron2, int hiddenNeuron3, int outputNeuron)
     {
-        var csv = new Dictionary<string, List<double>>();
-        csv.Add("parent_1", p1);
-        csv.Add("parent_2", p2);
-        csv.Add("child_1", c1);
-        csv.Add("child_2", c2);
-
+        var csv = new Dictionary<string, List<double>>
+        {
+            { "parent_1", p1 },
+            { "parent_2", p2 },
+            { "child_1", c1 },
+            { "child_2", c2 }
+        };
         buildCrossDnaCsv(csv, inpuNeuron, hiddenNeuron1, hiddenNeuron2, hiddenNeuron3, outputNeuron);
     }
 

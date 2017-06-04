@@ -115,12 +115,13 @@ public static class DNAAnalyzer_13
 
     internal static void WriteDnasToCsv(List<float> p1, List<float> p2, List<float> c1, List<float> c2)
     {
-        var csv = new Dictionary<string, List<float>>();
-        csv.Add("parent_1", p1);
-        csv.Add("parent_2", p2);
-        csv.Add("child_1", c1);
-        csv.Add("child_2", c2);
-
+        var csv = new Dictionary<string, List<float>>
+        {
+            { "parent_1", p1 },
+            { "parent_2", p2 },
+            { "child_1", c1 },
+            { "child_2", c2 }
+        };
         buildCrossDnaCsv(csv);
     }
 

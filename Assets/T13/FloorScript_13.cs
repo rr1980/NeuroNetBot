@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 [System.Serializable]
 public class FromTo
@@ -9,21 +7,26 @@ public class FromTo
     public GameObject To;
 }
 
-
 //[ExecuteInEditMode]
 public class FloorScript_13 : MonoBehaviour
 {
-
+    public bool isStatic;
     public GameObject Wall;
+    public GameObject Food;
+
     //public List<FromTo> FromTos;
     public int RndCount = 1;
 
-    void Start()
-    {
+    private float xs = -60;
+    private float zs = -60;
+    private float xb = -74;
+    private float zb = -74;
 
+    private void Start()
+    {
     }
 
-    void Update()
+    private void Update()
     {
         //if (Input.GetMouseButtonDown(0))
         //{
@@ -41,7 +44,6 @@ public class FloorScript_13 : MonoBehaviour
         //    //}
         //}
     }
-    
 
     public void Randomize()
     {
@@ -51,15 +53,21 @@ public class FloorScript_13 : MonoBehaviour
             GameObject.DestroyImmediate(item.gameObject);
         }
 
+        ws = GameObject.FindGameObjectsWithTag("Food");
+        foreach (var item in ws)
+        {
+            GameObject.DestroyImmediate(item.gameObject);
+        }
+
         var r = GetComponent<MeshRenderer>();
         int size = (int)r.bounds.size.x / 2;
         float high = 0.5f;
 
-        for (int i = -size+1; i <= size-1; i++)
+        for (int i = -size + 1; i <= size - 1; i++)
         {
             //var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
             var cube = Instantiate(Wall);
-            cube.isStatic = true;
+            cube.isStatic = isStatic;
             cube.transform.position = new Vector3(i, high, -size);
             cube.tag = "Wall";
             cube.transform.parent = gameObject.transform;
@@ -69,7 +77,7 @@ public class FloorScript_13 : MonoBehaviour
         {
             //var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
             var cube = Instantiate(Wall);
-            cube.isStatic = true;
+            cube.isStatic = isStatic;
             cube.transform.position = new Vector3(-size, high, i);
             cube.tag = "Wall";
             cube.transform.parent = gameObject.transform;
@@ -79,7 +87,7 @@ public class FloorScript_13 : MonoBehaviour
         {
             //var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
             var cube = Instantiate(Wall);
-            cube.isStatic = true;
+            cube.isStatic = isStatic;
             cube.transform.position = new Vector3(i, high, size);
             cube.tag = "Wall";
             cube.transform.parent = gameObject.transform;
@@ -89,49 +97,57 @@ public class FloorScript_13 : MonoBehaviour
         {
             //var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
             var cube = Instantiate(Wall);
-            cube.isStatic = true;
+            cube.isStatic = isStatic;
             cube.transform.position = new Vector3(size, high, i);
             cube.tag = "Wall";
             cube.transform.parent = gameObject.transform;
         }
 
-
         // ----------------
 
         for (int i = 0; i < RndCount; i++)
         {
-            var x = UnityEngine.Random.Range(-size + 10, size);
-            var z = UnityEngine.Random.Range(-size, size);
+            var x = UnityEngine.Random.Range(-size + 2, size - 2);
+            var z = UnityEngine.Random.Range(-size + 2, size - 2);
 
-            var cube = Instantiate(Wall);
-            cube.isStatic = true;
-            cube.transform.position = new Vector3(x, high, z);
-            cube.tag = "Wall";
-            cube.transform.parent = gameObject.transform;
+            if (UnityEngine.Random.Range(-1f, 1f) > 0)
+            {
+                var cube = Instantiate(Wall);
+                cube.isStatic = isStatic;
+                cube.transform.position = new Vector3(x, high, z);
+                cube.tag = "Wall";
+                cube.transform.parent = gameObject.transform;
+            }
+            else
+            {
+                GameObject food = Instantiate(Food);
+                food.isStatic = isStatic;
+                food.transform.position = new Vector3(x, high, z);
+                food.transform.parent = gameObject.transform;
+            }
         }
 
-        for (int i = 0; i < RndCount/100; i++)
+        var osW = GameObject.FindGameObjectsWithTag("Wall");
+        var osF = GameObject.FindGameObjectsWithTag("Food");
+
+        foreach (var item in osW)
         {
-            var x = UnityEngine.Random.Range(-size , - size + 10);
-            var z = UnityEngine.Random.Range(-size+10, size);
+            var p = item.transform.position;
 
-            var cube = Instantiate(Wall);
-            cube.isStatic = true;
-            cube.transform.position = new Vector3(x, high, z);
-            cube.tag = "Wall";
-            cube.transform.parent = gameObject.transform;
+            if (p.x < xs && p.x > xb && p.z < zs && p.z > zb)
+            {
+                GameObject.DestroyImmediate(item.gameObject);
+            }
         }
 
+        foreach (var item in osF)
+        {
+            var p = item.transform.position;
 
+            if (p.x < xs && p.x > xb && p.z < zs && p.z > zb)
+            {
+                GameObject.DestroyImmediate(item.gameObject);
+            }
+        }
     }
-
-
-    //void OnSceneGUI()
-    //{
-    //    Vector3 mousePosition = Event.current.mousePosition;
-    //    mousePosition.y = SceneView.currentDrawingSceneView.camera.pixelHeight - mousePosition.y;
-    //    mousePosition = SceneView.currentDrawingSceneView.camera.ScreenToWorldPoint(mousePosition);
-    //    mousePosition.y = -mousePosition.y;
-    //}
 }
-

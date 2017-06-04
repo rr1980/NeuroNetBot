@@ -30,7 +30,7 @@ public class Sensor_12
             toTarget.y = 0;
 
             RaycastHit hit;
-            if (Physics.Raycast(bot.transform.position, toTarget, out hit, sc.ScanRange))
+            if (Physics.Raycast(bot.transform.position, toTarget, out  hit, sc.ScanRange))
             {
                 if (hit.transform.root.gameObject != bot.transform.root.gameObject)
                 {

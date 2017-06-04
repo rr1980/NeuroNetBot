@@ -18,15 +18,28 @@ public class Bot_13 : MonoBehaviour
     public int Inputs;
     public List<int> Hiddens;
     public int Outputs;
+
     [Space(5)]
     [ReadOnly]
-    public float Fitness;
-    public GameObject Goal;
+    public float Range;
+    [ReadOnly]
+    public float Food;
+    public float Fitness
+    {
+        get
+        {
+            return Range + Food;
+        }
+    }
 
+    [Space(5)]
+    public GameObject Goal;
     public NN_13 NN;
     public GameObject SensorBank;
     private SensorBank_13 sb;
     private Vector3 StartPoint;
+
+    public float MyProperty { get; set; }
 
     void Start()
     {
@@ -77,7 +90,7 @@ public class Bot_13 : MonoBehaviour
 
         //Fitness = (Goal.transform.position - StartPoint) - (Goal.transform.position - transform.position);
         //Fitness = Vector3.Distance(Goal.transform.position, StartPoint) - Vector3.Distance(Goal.transform.position, transform.root.position);
-        Fitness = Vector3.Distance(StartPoint, transform.position);
+        Range = Vector3.Distance(StartPoint, transform.position);
     }
 
     private void Move()
@@ -128,6 +141,7 @@ public class Bot_13 : MonoBehaviour
 
             canMove = false;
             canRotate = false;
+            gameObject.GetComponent<Renderer>().material.color = Color.black;
 
 
             //var bot = collision.transform.root.gameObject.GetComponent<BotController_9>();

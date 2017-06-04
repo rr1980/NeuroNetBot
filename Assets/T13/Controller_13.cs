@@ -25,6 +25,8 @@ public class Controller_13 : MonoBehaviour
     //public Vector2 BotSpawnRangeY = new Vector2(-50, 50);
     public Vector3 FoodSpawnRange = new Vector3(-80, 80);
     [Space(5)]
+    public float FoodGod = 1000;
+    [Space(5)]
     public GameObject Food;
     public GameObject Bot;
 
@@ -38,7 +40,7 @@ public class Controller_13 : MonoBehaviour
     private void Start()
     {
         floor = GameObject.FindGameObjectWithTag("Floor");
-        setFood();
+        //setFood();
 
         for (int i = 0; i < MaxBotCount; i++)
         {
@@ -59,7 +61,8 @@ public class Controller_13 : MonoBehaviour
 
             if (!bots.Any(b => b.GetComponent<Bot_13>().canMove) || RoundTime < (Time.realtimeSinceStartup - startTime))
             {
-                updateFood();
+                //updateFood();
+                floor.GetComponent<FloorScript_13>().Randomize();
 
                 //var bots = GameObject.FindGameObjectsWithTag("Bot").ToList();
                 bots.ForEach(s => s.SetActive(false));
@@ -71,10 +74,10 @@ public class Controller_13 : MonoBehaviour
                     Best = bestNNs[0].Fitness;
                 }
 
-                List<NN_13> childs = new List<NN_13>();
-
-                childs.Add(bestNNs[0].NN);
-
+                List<NN_13> childs = new List<NN_13>
+                {
+                    bestNNs[0].NN
+                };
                 var rawnn0 = DNAAnalyzer_13.ReadNN(bestNNs[0].NN);
                 var rawnn1 = DNAAnalyzer_13.ReadNN(bestNNs[1].NN);
                 List<int> hs = getHiddenCount(bestNNs[0]);

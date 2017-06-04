@@ -65,7 +65,6 @@ public class Sensor_11 : Sensor_Base_11
             for (int i = 0; i < Angle; i++)
             {
                 Vector3 angle = Helper_5.GetSecLine(gameObject, i, SensorBank.ScanRange);
-
                 RaycastHit hit;
                 if (Physics.Raycast(transform.position, angle, out hit, SensorBank.ScanRange))
                 {
